@@ -123,12 +123,20 @@
 
         <fieldset class="group">
           <legend>Opponent</legend>
-          <div class="segmented">
+          <div class="segmented four">
             <label><input type="radio" name="level" value="easy"><span>Easy</span></label>
             <label><input type="radio" name="level" value="normal"><span>Normal</span></label>
             <label><input type="radio" name="level" value="hard"><span>Hard</span></label>
+            <label><input type="radio" name="level" value="expert"><span>Expert</span></label>
           </div>
+          <p id="level-note" class="note"></p>
         </fieldset>
+
+        <div class="group">
+          <p class="label">App</p>
+          <button id="install" class="button" type="button" hidden>Install on this device</button>
+          <p id="install-note" class="note"></p>
+        </div>
 
         <div class="group">
           <label class="switch"><span>Sound</span><input id="set-sound" type="checkbox"></label>

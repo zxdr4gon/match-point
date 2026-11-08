@@ -36,7 +36,13 @@
 
   /* ---------- Words ---------- */
 
-  const LEVEL_NAMES = { easy: "Easy CPU", normal: "Normal CPU", hard: "Hard CPU" };
+  const LEVEL_NAMES = { easy: "Easy CPU", normal: "Normal CPU", hard: "Hard CPU", expert: "Expert CPU" };
+  const LEVEL_NOTES = {
+    easy: "Slow shots and a wide timing window.",
+    normal: "A fair game.",
+    hard: "Faster shots, more smashes, and it reaches most of your returns.",
+    expert: "Almost everything comes back. Only well-timed, wide shots win points.",
+  };
   const minutes = (seconds) => `${seconds / 60} minute${seconds === 60 ? "" : "s"}`;
   const rulesText = () =>
     settings.mode === "timer"
@@ -147,6 +153,7 @@
     $("set-two").checked = settings.winByTwo;
     $("set-sound").checked = settings.sound;
     $("set-haptics").checked = settings.haptics;
+    $("level-note").textContent = LEVEL_NOTES[settings.level];
     showTarget();
     body.dataset.mode = settings.mode;
   };
@@ -173,6 +180,7 @@
     settings.winByTwo = $("set-two").checked;
     settings.sound = $("set-sound").checked;
     settings.haptics = $("set-haptics").checked;
+    $("level-note").textContent = LEVEL_NOTES[settings.level];
     body.dataset.mode = settings.mode;
     save("match-point.settings", settings);
   });
@@ -183,6 +191,40 @@
   });
   document.querySelectorAll("[data-target]").forEach((button) => {
     button.addEventListener("click", () => setTarget(Number(button.dataset.target)));
+  });
+
+  /* ---------- Installing the app ---------- */
+
+  let installPrompt = null;
+  const installed = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const apple = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  const showInstall = () => {
+    const button = $("install");
+    const note = $("install-note");
+    button.hidden = !installPrompt || installed();
+    if (installed()) note.textContent = "Installed. You're playing in the app.";
+    else if (installPrompt) note.textContent = "Adds Match Point to your home screen. It works offline too.";
+    else if (apple) note.textContent = "In Safari, tap the Share button, then Add to Home Screen.";
+    else note.textContent = "Open your browser's menu and choose Install app or Add to home screen.";
+  };
+
+  // Chrome and Edge offer an install prompt we can trigger from our own button.
+  addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    installPrompt = event;
+    showInstall();
+  });
+  addEventListener("appinstalled", () => {
+    installPrompt = null;
+    showInstall();
+  });
+  $("install").addEventListener("click", async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    installPrompt = null;
+    showInstall();
   });
 
   /* ---------- Buttons ---------- */
@@ -200,6 +242,7 @@
   $("again").addEventListener("click", play);
   $("open-settings").addEventListener("click", () => {
     fillSettings();
+    showInstall();
     show("settings");
   });
   $("close-settings").addEventListener("click", () => {

@@ -9,10 +9,6 @@ window.createMatch = ({ canvas, theme, onEvent = () => {} }) => {
   const lerp = (a, b, t) => a + (b - a) * t;
   const random = (lo, hi) => lo + Math.random() * (hi - lo);
 
-  // Timing windows, in seconds either side of the perfect moment.
-  const PERFECT = 0.075;
-  const GOOD = 0.17;
-
   // Court units: x runs -1 to 1 across the singles court, z from the near baseline
   // (0) to the far baseline (1), y is height. Both players hit at contact height.
   const NEAR = 0.1;
@@ -20,10 +16,14 @@ window.createMatch = ({ canvas, theme, onEvent = () => {} }) => {
   const CONTACT = 0.55;
   const NET = { z: 0.5, top: 0.36 };
 
+  // flight/floor: how long the CPU's shots take, at the start and at their fastest.
+  // perfect/good: her timing windows, in seconds either side of the perfect moment.
+  // reach: the CPU's chance of missing = base + (perfect shot ? perfect : 0) + how wide * wide.
   const LEVELS = {
-    easy: { flight: 1.48, floor: 0.95, miss: 0.08, smash: 0.5 },
-    normal: { flight: 1.3, floor: 0.78, miss: 0, smash: 1 },
-    hard: { flight: 1.14, floor: 0.66, miss: -0.04, smash: 1.4 },
+    easy: { flight: 1.48, floor: 0.95, smash: 0.5, perfect: 0.09, good: 0.2, reach: { base: 0.12, perfect: 0.3, wide: 0.26 } },
+    normal: { flight: 1.3, floor: 0.78, smash: 1, perfect: 0.075, good: 0.17, reach: { base: 0.05, perfect: 0.24, wide: 0.24 } },
+    hard: { flight: 1.08, floor: 0.6, smash: 1.6, perfect: 0.058, good: 0.13, reach: { base: 0.02, perfect: 0.11, wide: 0.1 } },
+    expert: { flight: 1, floor: 0.6, smash: 2.1, perfect: 0.05, good: 0.12, reach: { base: 0.03, perfect: 0.1, wide: 0.09 } },
   };
 
   /* ---------- Sound ---------- */
@@ -331,7 +331,8 @@ window.createMatch = ({ canvas, theme, onEvent = () => {} }) => {
     const perfect = quality === "perfect";
     const lead = Math.max(0, state.score.you - state.score.cpu);
     // Wide, hard shots are harder for the CPU to reach.
-    const missChance = 0.05 + (perfect ? 0.24 : 0.04) + Math.abs(aim) * 0.24 + state.level.miss - Math.min(lead, 4) * 0.03;
+    const { reach } = state.level;
+    const missChance = Math.max(0.01, reach.base + (perfect ? reach.perfect : 0.02) + Math.abs(aim) * reach.wide - Math.min(lead, 4) * 0.02);
     const reaches = Math.random() > missChance;
     state.cpuTarget = reaches ? aim : aim - Math.sign(aim || 1) * 0.42;
     launch("you", from, [aim, CONTACT, FAR], perfect ? 0.66 : 1.02, perfect ? 0.22 : 1, { reaches });
@@ -416,6 +417,7 @@ window.createMatch = ({ canvas, theme, onEvent = () => {} }) => {
     }
 
     const error = shot.t - shot.T;
+    const { perfect: PERFECT, good: GOOD } = state.level;
     if (error < -GOOD) {
       // Too early: a free practice swing, then a short wait before the next try.
       swing();
