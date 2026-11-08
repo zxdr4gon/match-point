@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#05060d">
+  <meta name="robots" content="noindex">
+  <title>Match point</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2305060d'/%3E%3Ccircle cx='16' cy='21' r='4' fill='%23f2d48a'/%3E%3Cpath d='M12 18 8 6h16l-4 12' fill='none' stroke='%23eeeaf8' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&display=swap">
+  <link rel="stylesheet" href="beta.css">
+</head>
+<body data-screen="intro">
+  <canvas id="court" aria-hidden="true"></canvas>
+
+  <header class="scoreboard" aria-live="polite">
+    <span class="who you">KHADIJA</span>
+    <span id="score-you" class="points">0</span>
+    <span class="dash" aria-hidden="true"></span>
+    <span id="score-cpu" class="points">0</span>
+    <span class="who">CPU</span>
+  </header>
+
+  <p id="callout" class="callout" aria-live="polite"></p>
+  <p class="serve-hint">Tap anywhere to serve</p>
+
+  <section class="card" data-for="intro" aria-labelledby="intro-title">
+    <p class="eyebrow">A birthday match</p>
+    <h1 id="intro-title">Match point</h1>
+    <p class="lead">First to 14 wins your present.</p>
+    <p class="how">Tap as the shuttle lands in the gold ring. Where you tap is where you aim.</p>
+    <button id="start" class="button primary" type="button">Serve</button>
+  </section>
+
+  <section class="card" data-for="result" aria-labelledby="result-title" aria-live="polite">
+    <h2 id="result-title"></h2>
+    <p id="result-score" class="final"></p>
+    <p id="result-note" class="how"></p>
+    <div class="actions">
+      <a id="prize" class="button primary" href="#">Open your present</a>
+      <button id="rematch" class="button" type="button">Rematch</button>
+    </div>
+  </section>
+
+  <script src="prize.js"></script>
+  <script src="engine.js"></script>
+  <script src="beta.js"></script>
+</body>
+</html>

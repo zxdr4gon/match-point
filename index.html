@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08130f">
+  <meta name="description" content="One-thumb badminton against the computer. Tap in time, aim with where you tap.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Match Point">
+  <title>Match Point</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&family=Barlow:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body data-screen="home">
+  <canvas id="court" aria-hidden="true"></canvas>
+
+  <!-- In-match overlay -->
+  <header class="hud">
+    <div class="board" aria-live="polite">
+      <span id="hud-name" class="board-name you"></span>
+      <span id="score-you" class="board-score">0</span>
+      <span id="score-cpu" class="board-score">0</span>
+      <span class="board-name">CPU</span>
+    </div>
+    <p id="clock" class="clock" hidden></p>
+    <button id="pause" class="icon-button" type="button" aria-label="Pause">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+    </button>
+  </header>
+  <p id="callout" class="callout" aria-live="polite"></p>
+  <p class="serve-hint">Tap to serve. Tap left or right to aim.</p>
+
+  <!-- First visit -->
+  <section class="screen" data-for="welcome" aria-labelledby="welcome-title">
+    <div class="sheet">
+      <p class="wordmark">Match Point</p>
+      <h1 id="welcome-title">What should the scoreboard call you?</h1>
+      <form id="welcome-form" class="stack">
+        <label class="field">
+          <span>Your name</span>
+          <input id="welcome-name" name="name" maxlength="14" autocomplete="nickname" required>
+        </label>
+        <button class="button primary" type="submit">Continue</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Home -->
+  <section class="screen" data-for="home" aria-labelledby="home-title">
+    <div class="sheet">
+      <p class="wordmark">Match Point</p>
+      <h1 id="home-title">Ready, <span id="home-name"></span>?</h1>
+      <dl class="facts">
+        <div><dt>Match</dt><dd id="home-rules"></dd></div>
+        <div><dt>Opponent</dt><dd id="home-level"></dd></div>
+        <div id="home-record-row"><dt>Record</dt><dd id="home-record"></dd></div>
+      </dl>
+      <div class="stack">
+        <button id="play" class="button primary" type="button">Play</button>
+        <button id="open-settings" class="button" type="button">Settings</button>
+      </div>
+      <p class="how">Tap as the shuttle reaches the ring. Hit it right on the beat for a smash.</p>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section class="screen" data-for="settings" aria-labelledby="settings-title">
+    <div class="sheet tall">
+      <div class="sheet-head">
+        <h2 id="settings-title">Settings</h2>
+        <button id="close-settings" class="button small" type="button">Done</button>
+      </div>
+
+      <form id="settings-form" class="settings">
+        <label class="field">
+          <span>Name</span>
+          <input id="set-name" maxlength="14" autocomplete="nickname">
+        </label>
+
+        <fieldset class="group">
+          <legend>Match type</legend>
+          <div class="segmented">
+            <label><input type="radio" name="mode" value="points"><span>First to</span></label>
+            <label><input type="radio" name="mode" value="timer"><span>Timed</span></label>
+          </div>
+        </fieldset>
+
+        <div class="group" data-mode="points">
+          <p class="label" id="target-label">Points to win</p>
+          <div class="stepper" role="group" aria-labelledby="target-label">
+            <button type="button" data-step="-1" aria-label="Fewer points">−</button>
+            <output id="set-target"></output>
+            <button type="button" data-step="1" aria-label="More points">+</button>
+          </div>
+          <div class="presets" aria-label="Common targets">
+            <button type="button" data-target="5">5</button>
+            <button type="button" data-target="11">11</button>
+            <button type="button" data-target="15">15</button>
+            <button type="button" data-target="21">21</button>
+          </div>
+          <label class="switch">
+            <span>Win by two</span>
+            <input id="set-two" type="checkbox">
+          </label>
+        </div>
+
+        <fieldset class="group" data-mode="timer">
+          <legend>Match length</legend>
+          <div class="segmented four">
+            <label><input type="radio" name="seconds" value="60"><span>1 min</span></label>
+            <label><input type="radio" name="seconds" value="120"><span>2 min</span></label>
+            <label><input type="radio" name="seconds" value="180"><span>3 min</span></label>
+            <label><input type="radio" name="seconds" value="300"><span>5 min</span></label>
+          </div>
+          <p class="note">Most points when time runs out wins. A tie goes to a golden point.</p>
+        </fieldset>
+
+        <fieldset class="group">
+          <legend>Opponent</legend>
+          <div class="segmented">
+            <label><input type="radio" name="level" value="easy"><span>Easy</span></label>
+            <label><input type="radio" name="level" value="normal"><span>Normal</span></label>
+            <label><input type="radio" name="level" value="hard"><span>Hard</span></label>
+          </div>
+        </fieldset>
+
+        <div class="group">
+          <label class="switch"><span>Sound</span><input id="set-sound" type="checkbox"></label>
+          <label class="switch"><span>Vibration</span><input id="set-haptics" type="checkbox"></label>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Pause -->
+  <section class="screen" data-for="paused" aria-labelledby="paused-title">
+    <div class="sheet">
+      <h2 id="paused-title">Paused</h2>
+      <div class="stack">
+        <button id="resume" class="button primary" type="button">Resume</button>
+        <button id="quit" class="button" type="button">Quit match</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Result -->
+  <section class="screen" data-for="result" aria-labelledby="result-title" aria-live="polite">
+    <div class="sheet">
+      <h2 id="result-title"></h2>
+      <p id="result-score" class="final"></p>
+      <p id="result-rules" class="how"></p>
+      <div class="stack">
+        <button id="again" class="button primary" type="button">Play again</button>
+        <button id="home" class="button" type="button">Home</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
