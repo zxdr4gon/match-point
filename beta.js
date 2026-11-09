@@ -49,9 +49,9 @@
         $("result-title").textContent = data.won ? "You win" : "So close";
         $("result-score").textContent = `${data.you}–${data.cpu}`;
         $("result-note").textContent = data.won
-          ? "Happy birthday, Khadija. Your present is ready."
-          : "The CPU got lucky. Your present is ready anyway.";
-        $("prize").textContent = "Open your present";
+          ? "Nice win! Your prize is ready."
+          : "The CPU got lucky. Your prize is ready anyway.";
+        $("prize").textContent = "Open your prize";
         setTimeout(() => (body.dataset.screen = "result"), data.won ? 1400 : 700);
       }
     },
