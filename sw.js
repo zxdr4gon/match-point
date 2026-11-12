@@ -1,6 +1,6 @@
 // Keeps the game playable offline once it's been opened.
 // Bump VERSION whenever any file changes, so phones pick up the update.
-const VERSION = "match-point-v3";
+const VERSION = "match-point-v4";
 const FILES = [
   "./",
   "index.html",
@@ -8,6 +8,10 @@ const FILES = [
   "app.js",
   "engine.js",
   "manifest.webmanifest",
+  "beta.html",
+  "beta.css",
+  "beta.js",
+  "prize.js",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/apple-touch-icon.png",
