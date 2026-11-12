@@ -59,7 +59,7 @@
 
   const play = () => {
     body.dataset.screen = "match";
-    match.start({ rules: { mode: "points", target: 14, winByTwo: false }, level: "normal" });
+    match.start({ rules: { mode: "points", target: 5, winByTwo: false }, level: "normal" });
   };
 
   $("start").addEventListener("click", play);
