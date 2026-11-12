@@ -4,7 +4,7 @@
   const body = document.body;
   const callout = $("callout");
 
-  $("prize").href = "https://zxdr4gon.github.io/hush/#j91yUh02eZ_ROY6Ni8u0ZiAkzRrMG7DafCfSOqNPOis" || "#";
+  $("prize").href = window.PRIZE_URL || "#";
 
   const bump = (id) => {
     const element = $(id);
