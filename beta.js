@@ -1,4 +1,4 @@
-// Beta build: first to 14, fixed name, and a link at the end.
+
 (() => {
   const $ = (id) => document.getElementById(id);
   const body = document.body;
