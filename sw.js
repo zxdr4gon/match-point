@@ -1,6 +1,6 @@
 // Keeps the game playable offline once it's been opened.
 // Bump VERSION whenever any file changes, so phones pick up the update.
-const VERSION = "match-point-v5";
+const VERSION = "match-point-v6";
 const FILES = [
   "./",
   "index.html",
